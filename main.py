@@ -111,10 +111,10 @@ def write_image(path, image):
         bytes.tofile(f)
 
 class CrossSegment(Enum):
-    TopLeft = (1, -1)
-    TopRight = (-1, -1)
-    BottomRight = (-1, 1)
-    BottomLeft = (1, 1)
+    TopLeft = (-1, 1)
+    TopRight = (1, 1)
+    BottomRight = (1, -1)
+    BottomLeft = (-1, -1)
 
 # Draws black-white dashed half-cross at `x`, `y`
 # `segment` determines which part of the cross is drawn
