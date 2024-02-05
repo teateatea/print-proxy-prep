@@ -18,7 +18,7 @@ Then, you can run main.py from the command line like "venv\scripts\python main.p
 # Running the Program
 ![image](https://user-images.githubusercontent.com/103437609/203212112-50db47df-0a4e-4bf2-9c59-a8554f521b7c.png)
 
-First, throw some images in the \images\ folder. Then, when you opem main.py or hit the "Run Cropper" button from the GUI, it will go through all the images and calculate and crop them.
+First, throw some images in the \images\ folder. Then, when you open main.py or hit the "Run Cropper" button from the GUI, it will go through all the images and calculate and crop them.
 
 You can either use the +/- buttons, left or right click the images themselves, or input whatever number you want (good for basic lands for example). I've included sizing for Letter (8.5" x 11"), A4 (8.27" x 11.69"), and Legal (8 1/2" x 14"), but other options would be easy to add if it's requested. Last, you can name your pdf. You don't need to add a ".pdf", I've got that covered for you.
 
