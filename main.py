@@ -48,6 +48,7 @@ config.read(os.path.join(cwd, "config.ini"))
 cfg = config["DEFAULT"]
 
 card_size_with_bleed_inch = (2.73, 3.72)
+# Tea has a Canon image CLASS MF216n printer, and this prints true to size.
 card_size_without_bleed_inch = (2.41, 3.39)
 
 def load_vibrance_cube():
