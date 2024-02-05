@@ -47,8 +47,8 @@ config = configparser.ConfigParser()
 config.read(os.path.join(cwd, "config.ini"))
 cfg = config["DEFAULT"]
 
-card_size_with_bleed_inch = (2.72, 3.7)
-card_size_without_bleed_inch = (2.48, 3.46)
+card_size_with_bleed_inch = (2.73, 3.72)
+card_size_without_bleed_inch = (2.41, 3.39)
 
 def load_vibrance_cube():
     with open(os.path.join(cwd, "vibrance.CUBE")) as f:
@@ -118,25 +118,27 @@ class CrossSegment(Enum):
 
 # Draws black-white dashed half-cross at `x`, `y`
 # `segment` determines which part of the cross is drawn
-def draw_half_cross(can, x, y, segment, c=6, s=1):
+def draw_half_cross(can, x, y, segment, dashcount, c=6, s=1, t=1):
     (dx, dy) = segment.value
-
     can.setLineWidth(s)
-    dash = [s, s]
+    dash = [t, t]
 
     # First layer
-    can.setDash(dash)
-    can.setStrokeColorRGB(255, 255, 255)
-    can.line(x, y, x, y + dy * c)
+    can.setDash(dash, t)
     can.setStrokeColorRGB(0, 0, 0)
-    can.line(x, y, x + dx * c, y)
+    can.line(x, y, x, y + (dy * 5) * dashcount)
+
+    can.setStrokeColorRGB(255, 255, 255)
+    can.line(x, y, x, y + dy * dashcount)
+    can.setStrokeColorRGB(0, 0, 0)
+    can.line(x, y, x + (dx * -5) * dashcount, y)
 
     # Second layer with phase offset
     can.setDash(dash, s)
     can.setStrokeColorRGB(0, 0, 0)
-    can.line(x, y, x, y + dy * c)
+    can.line(x, y, x, y + (dy * -1) * dashcount)
     can.setStrokeColorRGB(255, 255, 255)
-    can.line(x, y, x + dx * c, y)
+    can.line(x, y, x + dx * dashcount, y)
 
 # Draws black-white dashed cross at `x`, `y`
 def draw_cross(can, x, y, c=6, s=1):
@@ -184,6 +186,7 @@ def pdf_gen(p_dict, size):
     pages = canvas.Canvas(pdf_fp, pagesize=size)
     cols, rows = int(pw // w), int(ph // h)
     rx, ry = round((pw - (w * cols)) / 2), round((ph - (h * rows)) / 2)
+    dc = round(bleed_edge * 2 + 1)
     total_cards = sum(img_dict.values())
     pbreak = cols * rows
     i = 0
@@ -202,10 +205,10 @@ def pdf_gen(p_dict, size):
                 h,
             )
             if has_bleed_edge:
-                draw_half_cross(pages, (x + 0) * w + b + rx, (y + 0) * h + b + ry, CrossSegment.BottomLeft)
-                draw_half_cross(pages, (x + 1) * w - b + rx, (y + 0) * h + b + ry, CrossSegment.BottomRight)
-                draw_half_cross(pages, (x + 1) * w - b + rx, (y + 1) * h - b + ry, CrossSegment.TopRight)
-                draw_half_cross(pages, (x + 0) * w + b + rx, (y + 1) * h - b + ry, CrossSegment.TopLeft)
+                draw_half_cross(pages, (x + 0) * w + b + rx, (y + 0) * h + b + ry, CrossSegment.BottomLeft, dc)
+                draw_half_cross(pages, (x + 1) * w - b + rx, (y + 0) * h + b + ry, CrossSegment.BottomRight, dc)
+                draw_half_cross(pages, (x + 1) * w - b + rx, (y + 1) * h - b + ry, CrossSegment.TopRight, dc)
+                draw_half_cross(pages, (x + 0) * w + b + rx, (y + 1) * h - b + ry, CrossSegment.TopLeft, dc)
             elif j == pbreak - 1 or i == total_cards - 1:
                 # Draw lines
                 for cy in range(rows + 1):
