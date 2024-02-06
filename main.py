@@ -47,7 +47,8 @@ config = configparser.ConfigParser()
 config.read(os.path.join(cwd, "config.ini"))
 cfg = config["DEFAULT"]
 
-card_size_with_bleed_inch = (2.73, 3.72)
+# added 0.04 0.12
+card_size_with_bleed_inch = (2.82, 3.84)
 # Tea has a Canon image CLASS MF216n printer, and this prints true to size.
 card_size_without_bleed_inch = (2.41, 3.39)
 
@@ -123,23 +124,40 @@ def draw_half_cross(can, x, y, segment, dashcount, c=6, s=1, t=1):
     (dx, dy) = segment.value
     can.setLineWidth(s)
     dash = [t, t]
+    # cut off set
+    a = 3
 
     # First layer
-    can.setDash(dash, t)
+    can.setDash(dash, 1.7)
+    #can.setStrokeColorRGB(0, 0, 0)
+    #can.line(x, y, x, y + (dy * 5) * dashcount)
     can.setStrokeColorRGB(0, 0, 0)
-    can.line(x, y, x, y + (dy * 5) * dashcount)
+    #can.line(x, y, x, y + (dy * -1) * dashcount)
+    can.line(x + (dx * a), y + (dy * a), x + (dx * a), y + (dy * a) * (dashcount+1))
 
-    can.setStrokeColorRGB(255, 255, 255)
-    can.line(x, y, x, y + dy * dashcount)
     can.setStrokeColorRGB(0, 0, 0)
-    can.line(x, y, x + (dx * -5) * dashcount, y)
+    can.line(x + (dx * a), y + (dy * a), x + (dx * a) * (dashcount+1), y + (dy * a))
+    #can.line(x, y, x + (dx * -5) * dashcount, y)
+
+    can.line(x + (dx * a), y + (dy * a), x + (dx * a), y + (-dy * a) * (dashcount*0.5))
+
+    can.setStrokeColorRGB(0, 0, 0)
+    can.line(x + (dx * a), y + (dy * a), x + (-dx * a) * (dashcount * 0.5), y + (dy * a))
 
     # Second layer with phase offset
     can.setDash(dash, s)
-    can.setStrokeColorRGB(0, 0, 0)
-    can.line(x, y, x, y + (dy * -1) * dashcount)
     can.setStrokeColorRGB(255, 255, 255)
-    can.line(x, y, x + dx * dashcount, y)
+    can.line(x + (dx * a), y + (dy * a), x + (dx * a), y + (dy * a) * dashcount)
+
+    can.setStrokeColorRGB(255, 255, 255)
+    can.line(x + (dx * a), y + (dy * a), x + (dx * a) * dashcount, y + (dy * a))
+
+    # Third
+    can.setStrokeColorRGB(255, 255, 255)
+    can.line(x + (dx * a), y + (dy * a), x + (dx * a), y + (-dy * a) * (dashcount * 0.5))
+
+    can.setStrokeColorRGB(255, 255, 255)
+    can.line(x + (dx * a), y + (dy * a), x + (-dx * a) * (dashcount * 0.5), y + (dy * a))
 
 # Draws black-white dashed cross at `x`, `y`
 def draw_cross(can, x, y, c=6, s=1):
@@ -187,7 +205,7 @@ def pdf_gen(p_dict, size):
     pages = canvas.Canvas(pdf_fp, pagesize=size)
     cols, rows = int(pw // w), int(ph // h)
     rx, ry = round((pw - (w * cols)) / 2), round((ph - (h * rows)) / 2)
-    dc = round(bleed_edge * 2 + 1)
+    dc = round(bleed_edge)
     total_cards = sum(img_dict.values())
     pbreak = cols * rows
     i = 0
