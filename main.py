@@ -12,8 +12,9 @@ import numpy
 from PIL import Image, ImageFilter
 import PySimpleGUI as sg
 from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter, A4, legal
+from reportlab.lib.pagesizes import letter, A4, legal, MTG0, MTG1
 from enum import Enum
+
 
 sw, sh = sg.Window.get_screen_size()
 sg.theme("DarkTeal2")
@@ -232,7 +233,8 @@ def pdf_gen(p_dict, size):
                 # Draw lines
                 for cy in range(rows + 1):
                     for cx in range(cols + 1):
-                        draw_cross(pages, rx + w * cx, ry + h * cy)
+                        #draw_cross(pages, rx + w * cx, ry + h * cy)
+                        continue
             i += 1
     saving_window = popup("Saving...")
     saving_window.refresh()
@@ -578,7 +580,7 @@ else:
         "columns": 5,
         # pdf generation options
         "pagesize": "Letter",
-        "page_sizes": ["Letter", "A4", "Legal"],
+        "page_sizes": ["Letter", "A4", "Legal", "MTG0", "MTG1"],
         "orient": "Portrait",
         "bleed_edge": "0",
         "filename": "_printme",
@@ -679,7 +681,7 @@ while True:
         grey_window = grey_out(window)
         render_window = popup("Rendering...")
         render_window.refresh()
-        lookup = {"Letter": letter, "A4": A4, "Legal": legal}
+        lookup = {"Letter": letter, "A4": A4, "Legal": legal, "MTG0": MTG0, "MTG1": MTG1}
         pdf_gen(print_dict, lookup[print_dict["pagesize"]])
         render_window.close()
         grey_window.close()
